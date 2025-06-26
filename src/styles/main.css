@@ -1,0 +1,97 @@
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #343a40;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.days-select {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+
+.day-checkbox {
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.day-checkbox:hover {
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+}
+
+.day-checkbox input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ced4da;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+    margin-top: -3px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.day-checkbox input[type="checkbox"]:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.day-checkbox input[type="checkbox"]:checked::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: .5rem;
+    margin-bottom: .75rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.schedule-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.schedule-item span {
+    font-size: 1.05em;
+    color: #495057;
+}
+
+.schedule-list p {
+    text-align: center;
+    color: #adb5bd;
+    padding: 1.5rem;
+    font-style: italic;
+}
+
+.debug-info {
+    font-size: 0.75em;
+    color: #ced4da;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}

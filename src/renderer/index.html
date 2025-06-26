@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定时关机设置</title>
+    <link href="../cdn/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body class="bg-light">
+    <div class="container py-5">        
+        <div class="card shadow-lg border-0 mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
+                <h2 class="h5 mb-0 text-secondary">定时关机计划</h2>
+                <button id="openModalBtn" class="btn btn-primary d-flex align-items-center">
+                    + 添加
+                </button>
+            </div>
+            
+            <div class="card-body">
+                <div class="schedule-list" id="scheduleList"></div>
+                <span id="debugInfo" class="d-block text-center mt-4 text-muted small user-select-all"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addScheduleModalLabel">添加定时关机计划</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="timeInput" class="form-label fw-bold">选择时间:</label>
+                        <input type="time" id="timeInput" step="1" class="form-control form-control-lg">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">选择星期:</label>
+                        <div class="days-select d-grid gap-2">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="1" class="form-check-input me-1"> 周一
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="2" class="form-check-input me-1"> 周二
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="3" class="form-check-input me-1"> 周三
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="4" class="form-check-input me-1"> 周四
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="5" class="form-check-input me-1"> 周五
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="6" class="form-check-input me-1"> 周六
+                            </label>
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                                <input type="checkbox" value="7" class="form-check-input me-1"> 周日
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelAddBtn">取消</button>
+                    <button type="button" class="btn btn-primary" id="addScheduleBtn">确认添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-sm">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" id="infoModalLabel">提示</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-0 text-center">
+                    <p id="infoModalBody" class="mb-0"></p>
+                </div>
+                <div class="modal-footer border-0 pt-0 justify-content-center">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../cdn/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
