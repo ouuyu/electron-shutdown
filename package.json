@@ -15,8 +15,8 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.yourcompany.yourapp",
-    "productName": "YourAppName",
+    "appId": "com.ouuyu.nezha",
+    "productName": "Electron Nezha",
     "files": [
       "**/*",
       "!node_modules/${platform}/**/*",
@@ -28,6 +28,7 @@
     },
     "win": {
       "target": "nsis"
-    }
+    },
+    "publish": null
   }
 }
