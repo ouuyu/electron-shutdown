@@ -5,13 +5,49 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    overflow: hidden;
+html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
     height: 100vh;
-    user-select: none;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #232946; /* 初始深色 */
+    transition: background 1s linear;
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 100%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 0%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* 主容器 */
@@ -21,9 +57,11 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
     padding: 40px 20px;
+    box-sizing: border-box;
+    z-index: 1;
 }
 
 /* 背景动画粒子 */
@@ -92,107 +130,6 @@ body {
     }
 }
 
-/* 主要内容区域 */
-.main-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-    flex: 1;
-    justify-content: center;
-}
-
-/* 系统图标 */
-.system-icon {
-    margin-bottom: 20px;
-}
-
-.power-icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-}
-
-.power-icon svg {
-    width: 40px;
-    height: 40px;
-    color: #fff;
-}
-
-/* 倒计时显示 */
-.countdown-display {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.countdown-title {
-    font-size: 18px;
-    font-weight: 300;
-    margin-bottom: 15px;
-    opacity: 0.9;
-}
-
-.countdown-time {
-    font-size: 72px;
-    font-weight: 100;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-    margin-bottom: 10px;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-}
-
-.countdown-subtitle {
-    font-size: 16px;
-    font-weight: 300;
-    opacity: 0.8;
-}
-
-/* 进度环 */
-.progress-ring {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.progress-ring-svg {
-    transform: rotate(-90deg);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-}
-
-.progress-ring-background {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.1);
-    stroke-width: 4;
-}
-
-.progress-ring-progress {
-    fill: none;
-    stroke: #fff;
-    stroke-width: 4;
-    stroke-linecap: round;
-    stroke-dasharray: 565.48;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.5s ease;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-}
-
-.progress-percentage {
-    position: absolute;
-    font-size: 24px;
-    font-weight: 300;
-    color: white;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
 /* 滑动解锁区域 */
 .slide-to-cancel {
     position: relative;
@@ -200,19 +137,24 @@ body {
     width: 100%;
     max-width: 500px;
     margin-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .slide-track {
     position: relative;
     width: 100%;
     height: 60px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255,255,255,0.1);
     border-radius: 30px;
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.2);
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
 .slide-track:hover {
@@ -271,10 +213,10 @@ body {
     transform: translate(-50%, -50%);
     font-size: 16px;
     font-weight: 400;
-    color: white;
+    color: #fff;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .slide-button {
@@ -320,7 +262,7 @@ body {
 .slide-hint {
     text-align: center;
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255,255,255,0.8);
     margin-top: 15px;
     font-weight: 300;
 }
@@ -474,6 +416,7 @@ body {
     }
 }
 
+
 @keyframes holdingPulse {
     0%, 100% {
         transform: scale(1);
@@ -579,84 +522,30 @@ body {
 /* 响应式设计 */
 @media (max-width: 768px) {
     .countdown-container {
-        padding: 20px 15px;
+        padding: 20px 8px;
     }
-
-    .countdown-time {
-        font-size: 56px;
+    .poetry {
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem;
     }
-
-    .power-icon {
-        width: 60px;
-        height: 60px;
+    .poem-content {
+        font-size: 5vw;
+        min-height: 3em;
     }
-
-    .power-icon svg {
-        width: 30px;
-        height: 30px;
+    .poem-footer {
+        font-size: 1rem;
     }
-
-    .progress-ring-svg {
-        width: 160px;
-        height: 160px;
-    }
-
-    .slide-track {
-        height: 50px;
-        border-radius: 25px;
-    }
-
-    .slide-button {
-        width: 42px;
-        height: 42px;
-        top: 4px;
-        left: 4px;
-    }
-
-    .slide-text {
-        font-size: 14px;
+    .slide-to-cancel {
+        max-width: 98vw;
+        margin-bottom: 40px;
     }
 }
 
 @media (max-width: 480px) {
-    .countdown-time {
-        font-size: 48px;
+    .poetry {
+        padding: 0.8rem 0.2rem;
     }
-
-    .countdown-title {
-        font-size: 16px;
-    }
-
-    .countdown-subtitle {
-        font-size: 14px;
-    }
-
-    .progress-ring-svg {
-        width: 140px;
-        height: 140px;
-    }
-
-    .progress-percentage {
-        font-size: 20px;
-    }
-}
-
-/* 高对比度模式支持 */
-@media (prefers-contrast: high) {
-    .slide-track {
-        border: 2px solid white;
-    }
-
-    .slide-button {
-        border: 2px solid #333;
-    }
-}
-
-/* 减少动画模式支持 */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    .poem-content {
+        font-size: 6vw;
     }
 }
