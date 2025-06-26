@@ -18,10 +18,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '16'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Get release tag and name
         id: get_info
@@ -32,7 +37,7 @@ jobs:
           echo "release_name=$CurrentDateTime" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Build Windows app
-        run: npm run build:win
+        run: pnpm run build:win
 
       - name: Release and Upload Artifact
         uses: softprops/action-gh-release@v2
