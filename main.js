@@ -173,7 +173,7 @@ app.whenReady().then(() => {
   loadConfig();
 
   createTray();
-  createMainWindow();
+  // createMainWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
