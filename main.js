@@ -12,7 +12,7 @@ let shutdownSchedules = []; // 存储关机计划
 let timer = null;
 
 // 配置文件路径
-const configPath = path.join(__dirname, 'config.json');
+const configPath = path.join(app.getPath('userData'), 'config.json');
 
 // 保存配置到文件
 const saveConfig = () => {
