@@ -533,3 +533,17 @@ body {
 #poetry {
   margin-bottom: 4vh;
 }
+
+.weather-widget {
+    position: fixed;
+    bottom: 0;
+    width: 100vw !important;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.weather-widget a {
+    display: none;
+}

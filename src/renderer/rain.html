@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Rainy Window Background</title>
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; background: #1e1e2f; }
+    #container { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.142.0/build/three.module.js';
+
+    let scene, camera, renderer, rainMesh;
+    const COUNT = 5000;
+    const params = { speed: 1.0, tilt: 0.5 };
+    const dummy = new THREE.Object3D();
+    const speeds = new Float32Array(COUNT);
+
+    init();
+    animate();
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x1e1e2f, 50, 200);
+
+      camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 500);
+      camera.position.set(0, 20, 100);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      document.getElementById('container').appendChild(renderer.domElement);
+
+      // Background gradient
+      const bgGeom = new THREE.PlaneGeometry(2, 2);
+      const bgMat = new THREE.ShaderMaterial({
+        uniforms: {},
+        vertexShader: `void main(){ gl_Position = vec4(position,1.0); }`,
+        fragmentShader: `
+          void main(){
+            vec2 uv = gl_FragCoord.xy / vec2(${window.innerWidth.toFixed(1)}, ${window.innerHeight.toFixed(1)});
+            vec3 top = vec3(0.1,0.1,0.2);
+            vec3 bottom = vec3(0.0,0.0,0.05);
+            gl_FragColor = vec4(mix(bottom, top, uv.y),1.0);
+          }
+        `,
+        depthWrite: false
+      });
+      const bgMesh = new THREE.Mesh(bgGeom, bgMat);
+      bgMesh.frustumCulled = false;
+      scene.add(bgMesh);
+
+      // Rain instanced mesh
+      const rainGeo = new THREE.PlaneGeometry(0.05, 2);
+      const rainMat = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.7 });
+      rainMesh = new THREE.InstancedMesh(rainGeo, rainMat, COUNT);
+      rainMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      for (let i = 0; i < COUNT; i++) {
+        const x = (Math.random() - 0.5) * 200;
+        const y = Math.random() * 150;
+        const z = (Math.random() - 0.5) * 200;
+        dummy.position.set(x, y, z);
+        const tilt = (Math.random() - 0.5) * params.tilt;
+        dummy.rotation.set(tilt, 0, 0);
+        dummy.updateMatrix();
+        rainMesh.setMatrixAt(i, dummy.matrix);
+        speeds[i] = Math.random() * params.speed + 0.5;
+      }
+      scene.add(rainMesh);
+
+      window.addEventListener('resize', onResize);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const time = performance.now() * 0.001;
+      for (let i = 0; i < COUNT; i++) {
+        rainMesh.getMatrixAt(i, dummy.matrix);
+        dummy.position.setFromMatrixPosition(dummy.matrix);
+        dummy.rotation.setFromRotationMatrix(dummy.matrix);
+
+        // update position
+        dummy.position.x += Math.sin(time + i) * params.tilt * 0.01;
+        dummy.position.y -= speeds[i];
+        if (dummy.position.y < -10) {
+          dummy.position.y = Math.random() * 150 + 50;
+        }
+
+        dummy.updateMatrix();
+        rainMesh.setMatrixAt(i, dummy.matrix);
+      }
+      rainMesh.instanceMatrix.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    }
+
+    function onResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+  </script>
+</body>
+</html>
