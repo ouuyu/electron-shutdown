@@ -157,6 +157,8 @@ const createCountdownWindow = () => {
             contextIsolation: true,
         }
     });
+    countdownWindow.setAlwaysOnTop(true, 'screen-saver'); // 强制最前端
+    countdownWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true }); // 多桌面也可见
     countdownWindow.loadFile('src/renderer/countdown.html');
     countdownWindow.on('closed', () => {
         countdownWindow = null;
