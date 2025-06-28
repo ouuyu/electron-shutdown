@@ -10,8 +10,26 @@ let countdownWindow = null;
 let shutdownSchedules = []; // 存储关机计划
 let timer = null;
 
-// 配置文件路径
-const configPath = path.join(app.getPath('userData'), 'config.json');
+let configPath;
+const dDrive = 'd:';
+const nezhaDir = path.join(dDrive, 'nezha');
+const nezhaConfig = path.join(nezhaDir, 'config.json');
+
+try {
+  if (fs.existsSync(dDrive + '\\')) {
+    if (!fs.existsSync(nezhaDir)) {
+      fs.mkdirSync(nezhaDir, { recursive: true });
+    }
+    configPath = nezhaConfig;
+    console.log('Using config path:', configPath);
+  } else {
+    configPath = path.join(app.getPath('userData'), 'config.json');
+    console.log('Using config path:', configPath);
+  }
+} catch (e) {
+  configPath = path.join(app.getPath('userData'), 'config.json');
+  console.error('Error checking D drive, fallback to userData:', e);
+}
 
 // 保存配置到文件
 const saveConfig = () => {
