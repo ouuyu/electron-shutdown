@@ -1,4 +1,3 @@
-// main.js
 const { app, BrowserWindow, ipcMain, Tray, Menu, screen } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
@@ -233,4 +232,29 @@ ipcMain.on('close-countdown-window', () => {
     if (countdownWindow) {
         countdownWindow.close();
     }
+});
+
+const locationPath = path.join(app.getPath('userData'), 'user_location.json');
+
+ipcMain.handle('get-user-location', async () => {
+  try {
+    if (fs.existsSync(locationPath)) {
+      const data = fs.readFileSync(locationPath, 'utf8');
+      return JSON.parse(data);
+    }
+    return null;
+  } catch (err) {
+    console.error('Failed to read user location:', err);
+    return null;
+  }
+});
+
+ipcMain.handle('set-user-location', async (_event, location) => {
+  try {
+    fs.writeFileSync(locationPath, JSON.stringify(location, null, 2), 'utf8');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to save user location:', err);
+    return { success: false, error: err.message };
+  }
 });

@@ -14,5 +14,10 @@ export const SELECTORS = {
     SCHEDULE_LIST: '#scheduleList',
     DEBUG_INFO: '#debugInfo',
     OPEN_MODAL_BTN: '#openModalBtn',
-    ADD_SCHEDULE_BTN: '#addScheduleBtn'
+    ADD_SCHEDULE_BTN: '#addScheduleBtn',
+    AUTO_LOCATION: '#autoLocation',
+    PROVINCE_INPUT: '#provinceInput',
+    CITY_INPUT: '#cityInput',
+    DISTRICT_INPUT: '#districtInput',
+    SAVE_LOCATION_BTN: '#saveLocationBtn'
 };
