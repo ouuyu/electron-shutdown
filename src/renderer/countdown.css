@@ -112,11 +112,11 @@ body {
 
 /* 滑动解锁区域 */
 .slide-to-cancel {
-    position: relative;
+    position: absolute;
     z-index: 1;
     width: 100%;
     max-width: 500px;
-    margin-bottom: 80px;
+    bottom: 25vh;
     display: flex;
     flex-direction: column;
     align-items: center;
