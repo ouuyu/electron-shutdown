@@ -3,59 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline';"
-    <title></title>
     <link rel="stylesheet" href="countdown.css" />
     <link rel="stylesheet" href="poetry.css" />
+    <title>关机倒计时</title>
   </head>
   <body>
-    <div class="countdown-container">
-      <!-- 背景动画 -->
-      <div class="background-animation">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-      </div>
-      
-      <section id="poetry" class="poetry">
-        <div id="poem-content" class="poem-content"></div>
-        <div class="poem-footer"></div>
-      </section>
+    <!-- 背景动画 -->
+    <div class="background-animation">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
 
-      <br><br><br>
+    <div id="poetry" class="poetry">
+      <div id="poem-content" class="poem-content"></div>
+      <div class="poem-footer"></div>
+    </div>
 
-      <!-- 滑动解锁区域 -->
-      <div class="slide-to-cancel">
-        <div class="slide-track">
-          <div class="slide-track-background"></div>
-          <div class="slide-track-progress" id="slideProgress"></div>
-          <div class="slide-text" id="slideText">向左滑动取消关机</div>
-          <div class="slide-button" id="slideButton">
-            <div class="slide-button-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15 18L9 12L15 6"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div class="slide-button-ripple"></div>
+    <!-- 滑动解锁区域 -->
+    <div class="slide-to-cancel">
+      <div class="slide-track">
+        <div class="slide-track-background"></div>
+        <div class="slide-track-progress" id="slideProgress"></div>
+        <div class="slide-text" id="slideText">向左滑动取消关机</div>
+        <div class="slide-button" id="slideButton">
+          <div class="slide-button-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M15 18L9 12L15 6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
+          <div class="slide-button-ripple"></div>
         </div>
-        <div class="slide-hint">向左滑动并保持以取消关机</div>
       </div>
-
-      <!-- 状态提示 -->
-      <div class="status-message" id="statusMessage"></div>
+      <div class="slide-hint">向左滑动并保持以取消关机</div>
     </div>
 
     <!-- 大屏幕保持提示 -->

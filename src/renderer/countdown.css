@@ -50,25 +50,12 @@ body {
     }
 }
 
-/* 主容器 */
-.countdown-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    box-sizing: border-box;
-    z-index: 1;
-}
-
 /* 背景动画粒子 */
 .background-animation {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
     pointer-events: none;

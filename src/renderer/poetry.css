@@ -7,9 +7,10 @@
 .poetry {
     width: 95%;
     max-width: 1200px;
+    height: 45vh !important;
     background: rgba(255,255,255,0.10);
     backdrop-filter: blur(10px);
-    border-radius: 24px;
+    border-radius: 25px;
     padding: 2.5rem 2rem 1.5rem 2rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.10);
     display: flex;
@@ -18,7 +19,7 @@
     justify-content: center;
     transition: background 0.5s, box-shadow 0.5s;
     box-sizing: border-box;
-    margin: 0 auto;
+    margin-top: 5vh;
 }
 
 .poetry:hover {
@@ -53,7 +54,7 @@
 .poem-footer {
     font-size: 1.2rem;
     color: rgba(255,255,255,0.7);
-    margin-top: 1.5rem;
+    margin-bottom: 2vh;
     text-align: center;
     transition: color 0.5s;
 }
