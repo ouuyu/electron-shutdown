@@ -9,7 +9,7 @@
     let idx = 0;
     let nextIdx = 1;
     let step = 0;
-    const steps = 36;
+    const steps = 48;
     let deg = 135;
     function lerpColor(a, b, t) {
         const ah = parseInt(a.replace('#', ''), 16),
