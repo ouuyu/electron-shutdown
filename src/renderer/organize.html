@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="countdown.css">
+    <link rel="stylesheet" href="organize.css">
+    <title>整理桌面中</title>
+</head>
+<body>
+    <!-- 背景动画 -->
+    <div class="background-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- 整理日志容器 -->
+    <div class="organize-container">
+        <h1 class="organize-title">🗂️ 正在整理桌面文件</h1>
+        <div class="organize-progress">
+            <div class="progress-spinner"></div>
+        </div>
+        <div class="organize-logs" id="organizeLogs">
+            <!-- 日志条目将动态添加到这里 -->
+        </div>
+    </div>
+
+    <!-- 滑动解锁区域 -->
+    <div class="slide-to-cancel">
+        <div class="slide-track">
+            <div class="slide-track-background"></div>
+            <div class="slide-track-progress" id="slideProgress"></div>
+            <div class="slide-text" id="slideText">向左滑动取消关机</div>
+            <div class="slide-button" id="slideButton">
+                <div class="slide-button-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="slide-button-ripple"></div>
+            </div>
+        </div>
+        <div class="slide-hint">向左滑动并保持以取消关机</div>
+    </div>
+
+    <!-- 大屏幕保持提示 -->
+    <div class="hold-prompt" id="holdPrompt">
+        <div class="hold-prompt-content">
+            <div class="hold-prompt-title">保持滑动位置</div>
+            <div class="hold-prompt-subtitle">继续保持以取消关机</div>
+            <div class="hold-prompt-timer" id="holdTimer">2.0</div>
+            <div class="hold-prompt-progress">
+                <div class="hold-prompt-progress-bar" id="holdProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="countdown.js"></script>
+    <script src="organize.js"></script>
+</body>
+</html>

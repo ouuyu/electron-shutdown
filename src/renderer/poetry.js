@@ -172,8 +172,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadRandomPoetry();
   poetryInterval = setInterval(loadRandomPoetry, 1000);
-
-  const script = document.createElement("script");
-  script.src = "poetry-bg.js";
-  document.body.appendChild(script);
 });

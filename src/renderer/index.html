@@ -9,86 +9,123 @@
 </head>
 <body class="bg-light">
     <div class="container py-5">
+        <div class="page-header mb-4">
+            <h1 class="display-6 fw-bold text-center text-primary">定时关机设置</h1>
+            <p class="text-center text-muted">设置您的自动关机计划</p>
+        </div>
+
+        <!-- LLM配置卡片 -->
         <div class="card shadow-lg border-0 mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
-                <h2 class="h5 mb-0 text-secondary">天气预报设置</h2>
-                <button id="saveLocationBtn" class="btn btn-primary">保存</button>
+            <div class="card-header d-flex justify-content-between align-items-center bg-gradient-primary text-white border-0 py-3">
+                <h2 class="h5 mb-0">AI模型配置</h2>
+                <div>
+                    <button id="testLLMConnBtn" class="btn btn-info btn-sm me-2">测试连接</button>
+                    <button id="saveLLMConfigBtn" class="btn btn-light btn-sm">保存配置</button>
+                </div>
             </div>
-            <div class="card-body">
-                <form id="weatherForm">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">自动检测位置:</label>
-                        <div id="autoLocation" class="text-muted small">正在检测...</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">当前设置:</label>
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <input type="text" id="provinceInput" class="form-control" placeholder="省份">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="cityInput" class="form-control" placeholder="城市">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" id="districtInput" class="form-control" placeholder="区/县">
-                            </div>
-                        </div>
-                    </div>
-                </form>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <label for="baseUrlInput" class="form-label fw-bold">Base URL</label>
+                    <input type="text" id="baseUrlInput" class="form-control" placeholder="https://api.openai.com/v1">
+                    <div class="form-text">OpenAI兼容API地址，必须以 /v1 结尾</div>
+                </div>
+                <div class="mb-3">
+                    <label for="apiKeyInput" class="form-label fw-bold">API Key</label>
+                    <input type="password" id="apiKeyInput" class="form-control" placeholder="sk-...">
+                    <div class="form-text">你的API密钥</div>
+                </div>
+                <div class="mb-3">
+                    <label for="modelInput" class="form-label fw-bold">Model</label>
+                    <input type="text" id="modelInput" class="form-control" placeholder="gpt-4o-mini">
+                    <div class="form-text">模型名称，例如: gpt-4o-mini, gpt-4-turbo</div>
+                </div>
+                <!-- 快速填充按钮 -->
+                <div class="mb-3">
+                    <button id="fillDefaultConfigBtn" class="btn btn-outline-secondary btn-sm">
+                        <svg width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16" style="vertical-align: text-bottom;">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                        一键填入默认配置
+                    </button>
+                </div>
+                <!-- 测试结果显示区域 -->
+                <div id="testResultArea" class="d-none">
+                    <div id="testResultContent" class="alert mb-0"></div>
+                </div>
+                <div class="alert alert-info mb-0" id="configInfo">
+                    <strong>配置示例：</strong><br>
+                    • OpenAI: https://api.openai.com/v1<br>
+                    • 其他兼容服务: https://your-api.com/v1<br>
+                    • 确保URL以 <code>/v1</code> 结尾
+                </div>
             </div>
         </div>
 
+        <!-- 关机计划卡片 -->
         <div class="card shadow-lg border-0 mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
-                <h2 class="h5 mb-0 text-secondary">定时关机计划</h2>
-                <button id="openModalBtn" class="btn btn-primary d-flex align-items-center">
-                    + 添加
+            <div class="card-header d-flex justify-content-between align-items-center bg-gradient-primary text-white border-0 py-3">
+                <h2 class="h5 mb-0">关机计划</h2>
+                <button id="openModalBtn" class="btn btn-light btn-sm d-flex align-items-center">
+                    <svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    添加计划
                 </button>
             </div>
-            
-            <div class="card-body">
+
+            <div class="card-body p-4">
                 <div class="schedule-list" id="scheduleList"></div>
             </div>
         </div>
-        <code id="debugInfo" class="d-block mt-4 text-muted small user-select-all"></code>
     </div>
 
+    <!-- 添加关机计划模态框 -->
     <div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addScheduleModalLabel">添加定时关机计划</h5>
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold" id="addScheduleModalLabel">添加关机计划</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="timeInput" class="form-label fw-bold">选择时间:</label>
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <label for="timeInput" class="form-label fw-bold">关机时间</label>
                         <input type="time" id="timeInput" step="1" class="form-control form-control-lg">
                     </div>
-                    
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">选择星期:</label>
+                        <label class="form-label fw-bold">重复日期</label>
                         <div class="days-select d-grid gap-2">
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="1" class="form-check-input me-1"> 周一
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="2" class="form-check-input me-1"> 周二
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="3" class="form-check-input me-1"> 周三
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="4" class="form-check-input me-1"> 周四
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="5" class="form-check-input me-1"> 周五
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="6" class="form-check-input me-1"> 周六
                             </label>
-                            <label class="day-checkbox form-check-label border rounded p-2 text-center bg-light">
+                            <label class="day-checkbox form-check-label border rounded p-2 text-center">
                                 <input type="checkbox" value="7" class="form-check-input me-1"> 周日
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="organizeDesktopCheck">
+                            <label class="form-check-label fw-bold" for="organizeDesktopCheck">
+                                关机前整理桌面文件
                             </label>
                         </div>
                     </div>
@@ -101,6 +138,7 @@
         </div>
     </div>
 
+    <!-- 提示信息模态框 -->
     <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border-0 shadow-sm">

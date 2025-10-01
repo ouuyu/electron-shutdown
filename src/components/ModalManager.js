@@ -1,5 +1,3 @@
-import { SELECTORS } from '../config/constants.js';
-
 export class ModalManager {
     constructor() {
         this.addScheduleModalEl = document.getElementById('addScheduleModal');
@@ -9,8 +7,8 @@ export class ModalManager {
         this.infoModal = new bootstrap.Modal(this.infoModalEl);
         this.infoModalBody = document.getElementById('infoModalBody');
 
-        this.timeInput = document.querySelector(SELECTORS.TIME_INPUT);
-        this.dayCheckboxes = document.querySelectorAll(SELECTORS.DAY_CHECKBOXES);
+        this.timeInput = document.querySelector('#timeInput');
+        this.dayCheckboxes = document.querySelectorAll('.day-checkbox input[type="checkbox"]');
     }
 
     showInfoModal(message) {

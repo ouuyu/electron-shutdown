@@ -1,5 +1,3 @@
-import { MESSAGES } from '../config/constants.js';
-
 export class ScheduleService {
     constructor() {
         this.schedules = [];
@@ -11,7 +9,7 @@ export class ScheduleService {
             console.log('Load config:', this.schedules);
             return this.schedules;
         } catch (error) {
-            console.error(MESSAGES.LOAD_ERROR, error);
+            console.error('加载计划失败', error);
             this.schedules = [];
             return this.schedules;
         }
@@ -36,7 +34,7 @@ export class ScheduleService {
             window.electronAPI.setShutdownSchedules(this.schedules);
             console.log('Config has been sent to main thread:', this.schedules);
         } catch (error) {
-            console.error(MESSAGES.UPDATE_ERROR, error);
+            console.error('更新配置失败', error);
         }
     }
 }

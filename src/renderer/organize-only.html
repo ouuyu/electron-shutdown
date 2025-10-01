@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="countdown.css">
+    <link rel="stylesheet" href="organize.css">
+    <title>整理桌面中</title>
+</head>
+<body>
+    <!-- 背景动画 -->
+    <div class="background-animation">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- 整理日志容器 -->
+    <div class="organize-container">
+        <h1 class="organize-title">正在整理桌面文件</h1>
+        <div class="organize-progress">
+            <div class="progress-spinner" id="progressSpinner"></div>
+            <div class="organize-complete-message" id="completeMessage" style="display: none;">
+                <div class="complete-icon">✓</div>
+                <div class="complete-text">整理完成！</div>
+                <button class="close-btn" id="closeBtn">关闭窗口</button>
+            </div>
+        </div>
+        <div class="organize-logs" id="organizeLogs"></div>
+
+        <!-- 底部提示 -->
+        <div class="exit-hint">按 ESC 键退出</div>
+    </div>
+
+    <script src="organize.js"></script>
+</body>
+</html>
