@@ -1,4 +1,4 @@
-// 整理桌面日志管理（统一版本）
+// 整理桌面日志管理（精确进度版）
 class OrganizeManager {
     constructor() {
         this.logsContainer = document.getElementById('organizeLogs');
@@ -6,6 +6,10 @@ class OrganizeManager {
         this.completeMessage = document.getElementById('completeMessage');
         this.closeBtn = document.getElementById('closeBtn');
         this.slideText = document.getElementById('slideText');
+        this.progressPercentage = document.getElementById('progressPercentage');
+        this.progressStatus = document.getElementById('progressStatus');
+        this.progressFill = document.getElementById('progressFill');
+    this.progressMeta = document.getElementById('progressMeta');
         this.isOrganizing = true;
 
         // 检测是否有关机功能（通过是否存在滑动区域判断）
@@ -15,7 +19,10 @@ class OrganizeManager {
     }
 
     init() {
-        this.addLog('开始整理桌面...', 'info');
+        // 监听来自主进程的进度更新
+        window.electronAPI.onOrganizeProgress((progressData) => {
+            this.updateProgress(progressData.percentage, progressData.stage, progressData.current, progressData.total);
+        });
 
         // 监听来自主进程的日志消息
         window.electronAPI.onOrganizeLog((message) => {
@@ -31,6 +38,7 @@ class OrganizeManager {
         window.electronAPI.onOrganizeError((error) => {
             this.addLog(`错误: ${error}`, 'error');
             this.isOrganizing = false;
+            this.updateProgress(0, '整理失败');
         });
 
         // 仅在无关机模式下添加关闭功能
@@ -48,6 +56,29 @@ class OrganizeManager {
                     this.confirmExit();
                 }
             });
+        }
+    }
+
+    updateProgress(percentage, stage, current = null, total = null) {
+        if (this.progressPercentage) {
+            this.progressPercentage.textContent = `${Math.round(percentage)}%`;
+        }
+
+        let statusText = stage;
+        if (current !== null && total !== null && total > 0) {
+            statusText = `${stage} (${current}/${total})`;
+        }
+
+        if (this.progressStatus) {
+            this.progressStatus.textContent = statusText;
+        }
+
+        if (this.progressMeta) {
+            this.progressMeta.textContent = statusText;
+        }
+
+        if (this.progressFill) {
+            this.progressFill.style.width = `${percentage}%`;
         }
     }
 
@@ -83,16 +114,23 @@ class OrganizeManager {
         }
 
         logEntry.className = `log-entry ${type}`;
-        // 使用 innerText 确保正确显示中文字符
-        logEntry.innerText = `${new Date().toLocaleTimeString()} - ${message}`;
+        // 移除时间戳，简化日志
+        logEntry.innerText = message;
         this.logsContainer.appendChild(logEntry);
 
         // 自动滚动到底部
         this.logsContainer.scrollTop = this.logsContainer.scrollHeight;
+
+        // 限制日志数量，保持性能
+        const maxLogs = 50;
+        while (this.logsContainer.children.length > maxLogs) {
+            this.logsContainer.removeChild(this.logsContainer.firstChild);
+        }
     }
 
     onComplete() {
         this.isOrganizing = false;
+        this.updateProgress(100, '整理完成！');
         this.addLog('桌面整理完成！', 'success');
 
         if (this.hasShutdown) {
@@ -102,19 +140,33 @@ class OrganizeManager {
                 spinner.style.display = 'none';
             }
 
-            const completeMsg = document.createElement('div');
-            completeMsg.className = 'organize-complete';
-            completeMsg.textContent = '✓ 整理完成，即将关机';
-            document.querySelector('.organize-progress').appendChild(completeMsg);
-
             // 更新滑动提示文本
             if (this.slideText) {
                 this.slideText.textContent = '整理完成，关机倒计时继续';
+            }
+
+            if (this.progressMeta) {
+                this.progressMeta.textContent = '整理完成';
             }
         } else {
             // 无关机功能：显示完整的完成消息和关闭按钮
             if (this.progressSpinner) {
                 this.progressSpinner.style.display = 'none';
+            }
+
+            const progressMetaSection = document.querySelector('.progress-meta');
+            if (progressMetaSection) {
+                progressMetaSection.style.display = 'none';
+            }
+
+            const progressTrack = document.querySelector('.progress-track');
+            if (progressTrack) {
+                progressTrack.style.display = 'none';
+            }
+
+            const progressHeader = document.querySelector('.progress-header');
+            if (progressHeader) {
+                progressHeader.style.alignItems = 'center';
             }
 
             if (this.completeMessage) {

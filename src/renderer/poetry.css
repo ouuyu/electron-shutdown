@@ -5,13 +5,13 @@
 
 /* 诗词主容器 */
 .poetry {
-    width: 95%;
-    max-width: 1200px;
-    height: 45vh !important;
+    width: 90%;
+    max-width: 1000px;
+    min-width: 600px;
     background: rgba(255,255,255,0.10);
     backdrop-filter: blur(10px);
-    border-radius: 25px;
-    padding: 2.5rem 2rem 1.5rem 2rem;
+    border-radius: 30px;
+    padding: 3rem;
     box-shadow: 0 8px 32px rgba(0,0,0,0.10);
     display: flex;
     flex-direction: column;
@@ -19,8 +19,11 @@
     justify-content: center;
     transition: background 0.5s, box-shadow 0.5s;
     box-sizing: border-box;
-    position: absolute;
-    top: 10vh;
+    position: relative;
+    z-index: 10;
+    margin-bottom: 60px;
+    height: 320px;
+    flex-shrink: 0;
 }
 
 .poetry:hover {
@@ -32,12 +35,11 @@
 .poem-content {
     font-family: 'LXGWWenKai', sans-serif;
     font-weight: bold;
-    font-size: 3vw;
-    line-height: 1.5;
-    letter-spacing: 1.5px;
+    font-size: 2.5rem;
+    line-height: 1.8;
+    letter-spacing: 2px;
     color: #fff;
     width: 100%;
-    min-height: 5em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,6 +47,7 @@
     transition: font-size 0.5s, color 0.5s;
     word-break: break-all;
     margin: 0 auto;
+    flex: 1;
 }
 
 .poem-content.is-prose {
@@ -53,11 +56,12 @@
 }
 
 .poem-footer {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: rgba(255,255,255,0.7);
-    margin-bottom: 2vh;
+    margin-top: 16px;
     text-align: center;
     transition: color 0.5s;
+    flex-shrink: 0;
 }
 
 /* 动画保留 */
@@ -101,12 +105,14 @@
 /* 响应式优化 */
 @media (max-width: 768px) {
     .poetry {
-        max-width: 98vw;
-        padding: 1.2rem 0.5rem;
+        width: 92%;
+        min-width: unset;
+        padding: 2.5rem 2rem;
+        height: 280px;
+        margin-bottom: 50px;
     }
     .poem-content {
-        font-size: 5vw;
-        min-height: 3em;
+        font-size: 2rem;
     }
     .poem-footer {
         font-size: 1rem;
@@ -115,9 +121,15 @@
 
 @media (max-width: 480px) {
     .poetry {
-        padding: 0.8rem 0.2rem;
+        width: 94%;
+        padding: 2rem 1.5rem;
+        height: 240px;
+        margin-bottom: 40px;
     }
     .poem-content {
-        font-size: 6vw;
+        font-size: 1.5rem;
+    }
+    .poem-footer {
+        font-size: 0.9rem;
     }
 }

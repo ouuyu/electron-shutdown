@@ -7,11 +7,20 @@ const { parse } = require('pptxtojson/dist/index.cjs');
 const mammoth = require('mammoth');
 
 class DesktopOrganizer {
-    constructor(llmConfig, logCallback) {
+    constructor(llmConfig, logCallback, progressCallback) {
         this.llmConfig = llmConfig;
         this.logCallback = logCallback || ((msg) => console.log(msg));
+        this.progressCallback = progressCallback || ((data) => {});
         this.desktopPath = path.join(os.homedir(), 'Desktop');
         this.subjects = ['语文', '数学', '英语', '物理', '化学', '生物', '政治', '历史', '地理'];
+
+        // 进度跟踪
+        this.totalFiles = 0;
+        this.processedFiles = 0;
+        this.currentStage = '';
+
+        // 停止标志
+        this.shouldStop = false;
 
         // 日志级别配置
         this.logLevels = {
@@ -26,6 +35,24 @@ class DesktopOrganizer {
         };
     }
 
+    stop() {
+        this.shouldStop = true;
+        this.log('Received stop signal, stopping organization...', 'WARNING');
+    }
+
+    updateProgress(percentage, stage, current = null, total = null) {
+        this.currentStage = stage;
+        const progressData = {
+            percentage: Math.round(percentage),
+            stage,
+            current: current !== null ? current : this.processedFiles,
+            total: total !== null ? total : this.totalFiles
+        };
+        if (this.progressCallback) {
+            this.progressCallback(progressData);
+        }
+    }
+
     log(message, level = 'INFO') {
         const logConfig = this.logLevels[level] || this.logLevels.INFO;
         const formattedMessage = `${logConfig.tag}  ${message}`;
@@ -37,22 +64,36 @@ class DesktopOrganizer {
 
     async organize() {
         this.log('Starting desktop organization...', 'INFO');
+        this.updateProgress(0, '初始化...');
 
         try {
             // 获取桌面上的所有文件
+            this.updateProgress(5, '扫描桌面文件...');
             const files = await this.getDesktopFiles();
+            this.totalFiles = files.length;
             this.log(`Found ${files.length} files to organize`, 'INFO');
+            this.updateProgress(10, `发现 ${files.length} 个文件`, 0, files.length);
 
             if (files.length === 0) {
                 this.log('No files to organize on desktop', 'WARNING');
+                this.updateProgress(100, '没有需要整理的文件');
                 return;
             }
 
             // 逐个处理文件
-            for (const file of files) {
-                await this.processFile(file);
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                this.processedFiles = i;
+
+                // 计算进度：10% 已用于扫描，剩余 90% 用于处理文件
+                const fileProgress = 10 + ((i + 1) / files.length) * 90;
+
+                await this.processFile(file, i + 1);
+
+                this.updateProgress(fileProgress, `处理完成 ${i + 1}/${files.length}`, i + 1, files.length);
             }
 
+            this.updateProgress(100, '整理完成！', files.length, files.length);
             this.log('Desktop organization completed!', 'SUCCESS');
         } catch (error) {
             this.log(`Organization failed: ${error.message}`, 'ERROR');
@@ -85,8 +126,8 @@ class DesktopOrganizer {
         return files;
     }
 
-    async processFile(file) {
-        this.log(`Processing: ${file.name}`, 'FILE');
+    async processFile(file, index) {
+        this.log(`Processing [${index}/${this.totalFiles}]: ${file.name}`, 'FILE');
 
         try {
             // 提取文件内容

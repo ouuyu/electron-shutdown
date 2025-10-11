@@ -1,156 +1,276 @@
-class CountdownManager {
-  constructor() {
-    this.totalTime = 90; // 秒
-    this.remainingTime = this.totalTime;
-    this.isRunning = true;
-    this.isCancelled = false;
+// ==================== 粒子背景系统 ====================
+class ParticleSystem {
+    constructor() {
+        this.canvas = document.getElementById('particleCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.particleCount = 48;
+        this.lastTimestamp = performance.now();
 
-    // DOM 元素
-    this.timeEl = document.getElementById('countdownTime');
-    this.slideBtn = document.getElementById('slideButton');
-    this.slideProg = document.getElementById('slideProgress');
-    this.slideText = document.getElementById('slideText');
-    this.holdPrompt = document.getElementById('holdPrompt');
-    this.holdTimerEl = document.getElementById('holdTimer');
-    this.holdBar = document.getElementById('holdProgressBar');
-    this.container = document.querySelector('.countdown-container');
-    this.statusEl = document.getElementById('statusMessage');
+        this.resize();
+        this.init();
+        this.animate = this.animate.bind(this);
 
-    // 滑动相关
-    this.dragging = false;
-    this.startX = 0;
-    this.currentX = 0;
-    this.trackWidth = document.querySelector('.slide-track').offsetWidth;
-    this.btnWidth = this.slideBtn.offsetWidth;
-    this.maxDist = this.trackWidth - this.btnWidth - 8;
-    this.holdDuration = 2000;
-    this.holdTimer = null;
-    this.holding = false;
-
-    this.init();
-  }
-
-  init() {
-    // 滑动事件绑定
-    ['mousedown', 'touchstart'].forEach(evt =>
-      this.slideBtn.addEventListener(evt, this.onStart.bind(this))
-    );
-    ['mousemove', 'touchmove'].forEach(evt =>
-      document.addEventListener(evt, this.onMove.bind(this))
-    );
-    ['mouseup', 'touchend'].forEach(evt =>
-      document.addEventListener(evt, this.onEnd.bind(this))
-    );
-
-    // 禁止右键和文本选中
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('selectstart', e => e.preventDefault());
-
-    this.startCountdown();
-    this.updateDisplay();
-  }
-
-  onStart(e) {
-    if (this.isCancelled) return;
-    e.preventDefault();
-    this.dragging = true;
-    this.slideBtn.style.transition = 'none';
-    this.startX = e.touches ? e.touches[0].clientX : e.clientX;
-  }
-
-  onMove(e) {
-    if (!this.dragging || this.isCancelled) return;
-    e.preventDefault();
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    this.currentX = Math.min(Math.max(0, this.startX - x), this.maxDist);
-    this.slideBtn.style.transform = `translateX(${-this.currentX}px)`;
-
-    const pct = this.currentX / this.maxDist;
-    this.slideProg.style.width = `${pct * 100}%`;
-    this.slideText.style.opacity = 1 - pct * 0.7;
-
-    if (pct >= 0.85 && !this.holding) {
-      this.startHold();
-    } else if (pct < 0.85) {
-      this.cancelHold();
-    }
-  }
-
-  onEnd() {
-    if (!this.dragging) return;
-    this.dragging = false;
-
-    // 复位动画：弹性贝塞尔
-    this.slideBtn.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-
-    // 只要还没真正取消，就复位
-    if (!this.isCancelled) {
-      this.currentX = 0;
-      this.slideProg.style.width = '0%';
-      this.slideText.style.opacity = '1';
-      this.slideBtn.style.transform = '';
+        window.addEventListener('resize', () => this.resize());
+        requestAnimationFrame(this.animate);
     }
 
-    this.cancelHold();
-  }
+    resize() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        if (this.particles.length) {
+            this.particles = this.particles.map(() => this.createParticle());
+        }
+    }
 
-  startHold() {
-    this.holding = true;
-    this.holdPrompt.classList.add('show');
-    this.slideText.textContent = '继续保持以取消关机...';
-    const startTime = performance.now();
+    createParticle() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            vx: (Math.random() - 0.5) * 0.18,
+            vy: (Math.random() - 0.5) * 0.18,
+            radius: Math.random() * 1.6 + 0.6,
+            baseAlpha: Math.random() * 0.35 + 0.25,
+            pulse: Math.random() * Math.PI * 2
+        };
+    }
 
-    const tick = now => {
-      const elapsed = now - startTime;
-      const prog = Math.min(elapsed / this.holdDuration, 1);
-      this.holdBar.style.width = `${prog * 100}%`;
-      this.holdTimerEl.textContent = ((this.holdDuration - elapsed) / 1000).toFixed(1);
-      if (prog < 1 && this.holding) {
-        requestAnimationFrame(tick);
-      }
-    };
-    requestAnimationFrame(tick);
+    init() {
+        this.particles = Array.from({ length: this.particleCount }, () => this.createParticle());
+    }
 
-    this.holdTimer = setTimeout(() => {
-      if (this.holding) this.doCancel();
-    }, this.holdDuration);
-  }
+    animate(timestamp) {
+        const delta = Math.min((timestamp - this.lastTimestamp) / 16.67, 2);
+        this.lastTimestamp = timestamp;
 
-  cancelHold() {
-    this.holding = false;
-    this.holdPrompt.classList.remove('show');
-    clearTimeout(this.holdTimer);
-    this.holdBar.style.width = '0%';
-    this.slideText.textContent = '向左滑动取消关机';
-  }
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-  doCancel() {
-    this.isCancelled = true;
-    this.isRunning = false;
-    window.electronAPI?.closeCountdownWindow();
-  }
+        for (const particle of this.particles) {
+            particle.pulse += 0.012 * delta;
+            const alpha = particle.baseAlpha + Math.sin(particle.pulse) * 0.08;
 
-  startCountdown() {
-    this.countInt = setInterval(() => {
-      if (!this.isRunning) return clearInterval(this.countInt);
-      this.remainingTime--;
-      this.updateDisplay();
+            this.ctx.beginPath();
+            this.ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = `rgba(76, 110, 245, ${alpha.toFixed(3)})`;
+            this.ctx.fill();
 
-      if (this.remainingTime <= 0) {
-        clearInterval(this.countInt);
-        window.electronAPI?.executeShutdown();
-        window.electronAPI?.closeCountdownWindow();
-      }
-    }, 1000);
-  }
+            particle.x += particle.vx * delta;
+            particle.y += particle.vy * delta;
 
-  updateDisplay() {
-    const m = String(Math.floor(this.remainingTime / 60)).padStart(2, '0');
-    const s = String(this.remainingTime % 60).padStart(2, '0');
-    this.slideText.textContent = `关机倒计时 ${m}:${s}`;
-  }
+            if (particle.x < -40) particle.x = this.canvas.width + 40;
+            if (particle.x > this.canvas.width + 40) particle.x = -40;
+            if (particle.y < -40) particle.y = this.canvas.height + 40;
+            if (particle.y > this.canvas.height + 40) particle.y = -40;
+        }
+
+        for (let i = 0; i < this.particles.length; i++) {
+            const p1 = this.particles[i];
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const p2 = this.particles[j];
+                const dx = p1.x - p2.x;
+                const dy = p1.y - p2.y;
+                const distance = Math.hypot(dx, dy);
+
+                if (distance < 120) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(p1.x, p1.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.strokeStyle = `rgba(59, 130, 246, ${(0.14 * (1 - distance / 120)).toFixed(3)})`;
+                    this.ctx.lineWidth = 0.8;
+                    this.ctx.stroke();
+                }
+            }
+        }
+
+        requestAnimationFrame(this.animate);
+    }
 }
 
+// ==================== 鼠标晃动检测器 ====================
+class MouseShakeDetector {
+    constructor(onShakeComplete) {
+        this.onShakeComplete = onShakeComplete;
+    this.positions = [];
+    this.maxPositions = 12;
+    this.shakeThreshold = 1100;
+    this.shakeProgress = 0;
+    this.requiredShake = 100;
+    this.isShaking = false;
+    this.decayRate = 1.6;
+        
+        this.init();
+    }
+    
+    init() {
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        
+        // 进度衰减
+        setInterval(() => {
+            if (this.shakeProgress > 0 && !this.isShaking) {
+                this.shakeProgress = Math.max(0, this.shakeProgress - this.decayRate);
+                this.updateProgress();
+            }
+            this.isShaking = false;
+        }, 120);
+    }
+    
+    onMouseMove(e) {
+        this.positions.push({ x: e.clientX, y: e.clientY, time: Date.now() });
+        
+        if (this.positions.length > this.maxPositions) {
+            this.positions.shift();
+        }
+        
+        if (this.positions.length >= this.maxPositions) {
+            const shake = this.calculateShake();
+            
+            if (shake > this.shakeThreshold) {
+                this.isShaking = true;
+                this.shakeProgress = Math.min(this.requiredShake, this.shakeProgress + 7);
+                this.updateProgress();
+                
+                if (this.shakeProgress >= this.requiredShake) {
+                    this.onShakeComplete();
+                    this.shakeProgress = 0;
+                    this.positions = [];
+                }
+            }
+        }
+    }
+    
+    calculateShake() {
+        let totalDistance = 0;
+        
+        for (let i = 1; i < this.positions.length; i++) {
+            const dx = this.positions[i].x - this.positions[i - 1].x;
+            const dy = this.positions[i].y - this.positions[i - 1].y;
+            totalDistance += Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        return totalDistance;
+    }
+    
+    updateProgress() {
+        const progressBar = document.getElementById('shakeProgress');
+        if (progressBar) {
+            progressBar.style.width = `${(this.shakeProgress / this.requiredShake) * 100}%`;
+        }
+    }
+}
+
+// ==================== 倒计时管理器 ====================
+class CountdownManager {
+    constructor() {
+        this.totalTime = 10; // 10秒倒计时
+        this.remainingTime = this.totalTime;
+        this.isRunning = true;
+        this.isCancelled = false;
+        
+        // DOM 元素
+        this.countdownNumber = document.getElementById('countdownNumber');
+        this.progressCircle = document.getElementById('progressCircle');
+        this.successOverlay = document.getElementById('successOverlay');
+        this.currentTimeElement = document.getElementById('currentTime');
+        
+        // 圆环参数
+        this.circleRadius = 90;
+        this.circleCircumference = 2 * Math.PI * this.circleRadius;
+        
+        this.init();
+    }
+    
+    init() {
+        // 初始化进度圆环
+        this.progressCircle.style.strokeDasharray = this.circleCircumference;
+        this.progressCircle.style.strokeDashoffset = 0;
+        
+        // 初始化粒子系统
+        new ParticleSystem();
+        
+        // 初始化鼠标晃动检测
+        new MouseShakeDetector(() => this.onShakeComplete());
+        
+        // 更新时间
+        this.updateCurrentTime();
+        setInterval(() => this.updateCurrentTime(), 1000);
+        
+        // 开始倒计时
+        this.startCountdown();
+    }
+    
+    updateCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        this.currentTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    
+    startCountdown() {
+        const tick = () => {
+            if (!this.isRunning) return;
+            
+            this.remainingTime--;
+            this.updateDisplay();
+            
+            // 倒计时结束
+            if (this.remainingTime <= 0) {
+                this.executeShutdown();
+                return;
+            }
+            
+            setTimeout(tick, 1000);
+        };
+        
+        setTimeout(tick, 1000);
+    }
+    
+    updateDisplay() {
+        // 更新数字
+        this.countdownNumber.textContent = this.remainingTime;
+        
+        // 更新圆环进度
+    const progress = (this.totalTime - this.remainingTime) / this.totalTime;
+    this.progressCircle.style.strokeDashoffset = this.circleCircumference * progress;
+        
+        if (this.remainingTime <= 3 && this.remainingTime > 0) {
+            this.countdownNumber.classList.add('urgent');
+        } else {
+            this.countdownNumber.classList.remove('urgent');
+        }
+    }
+    
+    onShakeComplete() {
+        if (this.isCancelled || !this.isRunning) return;
+        
+        this.isCancelled = true;
+        this.isRunning = false;
+        
+        // 显示成功动画
+        this.successOverlay.classList.add('show');
+        
+        // 2秒后关闭窗口
+        setTimeout(() => {
+            this.closeWindow();
+        }, 2000);
+    }
+    
+    executeShutdown() {
+        this.isRunning = false;
+        if (window.electronAPI?.executeShutdown) {
+            window.electronAPI.executeShutdown();
+        }
+        this.closeWindow();
+    }
+    
+    closeWindow() {
+        if (window.electronAPI?.closeCountdownWindow) {
+            window.electronAPI.closeCountdownWindow();
+        }
+    }
+}
+
+// ==================== 页面加载完成后初始化 ====================
 document.addEventListener('DOMContentLoaded', () => {
-  new CountdownManager();
+    new CountdownManager();
 });

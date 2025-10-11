@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // 桌面整理事件监听
   onOrganizeLog: (callback) => ipcRenderer.on('organize-log', (_, message) => callback(message)),
+  onOrganizeProgress: (callback) => ipcRenderer.on('organize-progress', (_, progressData) => callback(progressData)),
   onOrganizeComplete: (callback) => ipcRenderer.on('organize-complete', () => callback()),
   onOrganizeError: (callback) => ipcRenderer.on('organize-error', (_, error) => callback(error)),
 });

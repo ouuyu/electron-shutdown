@@ -203,6 +203,8 @@ const createCountdownWindow = (schedule) => {
     countdownWindow.on('closed', () => {
         countdownWindow = null;
         currentSchedule = null;
+        // 停止整理任务
+        stopDesktopOrganize();
         if (shutdownSchedules.length > 0 && !timer) {
             timer = setInterval(checkShutdownCondition, 1000);
         }
@@ -236,6 +238,8 @@ const createOrganizeWindow = () => {
 
     countdownWindow.on('closed', () => {
         countdownWindow = null;
+        // 停止整理任务
+        stopDesktopOrganize();
     });
 };
 
@@ -470,9 +474,19 @@ ipcMain.handle('test-llm-connection', async (_event, config) => {
   });
 });
 
+// 全局变量：当前整理器实例
+let currentOrganizer = null;
+let isOrganizing = false;
+
 // 开始整理桌面
 const startDesktopOrganize = async () => {
   try {
+    // 如果正在整理，忽略
+    if (isOrganizing) {
+      console.log('Already organizing, skipping...');
+      return;
+    }
+
     // 加载LLM配置
     let llmConfig = null;
     if (fs.existsSync(llmConfigPath)) {
@@ -486,13 +500,22 @@ const startDesktopOrganize = async () => {
       return;
     }
 
+    // 标记为正在整理
+    isOrganizing = true;
+
     // 创建整理器实例
-    const organizer = new DesktopOrganizer(llmConfig, (message) => {
-      sendOrganizeLog(message);
-    });
+    currentOrganizer = new DesktopOrganizer(
+      llmConfig,
+      (message) => {
+        sendOrganizeLog(message);
+      },
+      (progressData) => {
+        sendOrganizeProgress(progressData);
+      }
+    );
 
     // 开始整理
-    await organizer.organize();
+    await currentOrganizer.organize();
 
     // 发送完成事件
     if (countdownWindow && !countdownWindow.isDestroyed()) {
@@ -501,6 +524,20 @@ const startDesktopOrganize = async () => {
   } catch (error) {
     console.error('Desktop organize error:', error);
     sendOrganizeError(error.message);
+  } finally {
+    // 清理
+    isOrganizing = false;
+    currentOrganizer = null;
+  }
+};
+
+// 停止整理桌面
+const stopDesktopOrganize = () => {
+  if (currentOrganizer && isOrganizing) {
+    console.log('Stopping desktop organization...');
+    currentOrganizer.stop();
+    isOrganizing = false;
+    currentOrganizer = null;
   }
 };
 
@@ -508,6 +545,13 @@ const startDesktopOrganize = async () => {
 const sendOrganizeLog = (message) => {
   if (countdownWindow && !countdownWindow.isDestroyed()) {
     countdownWindow.webContents.send('organize-log', message);
+  }
+};
+
+// 发送整理进度到渲染进程
+const sendOrganizeProgress = (progressData) => {
+  if (countdownWindow && !countdownWindow.isDestroyed()) {
+    countdownWindow.webContents.send('organize-progress', progressData);
   }
 };
 
