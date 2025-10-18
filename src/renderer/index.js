@@ -305,7 +305,7 @@ async function testLLMConnection() {
 function fillDefaultConfig() {
     document.querySelector('#baseUrlInput').value = 'https://lm.wordcarve.com/v1';
     document.querySelector('#apiKeyInput').value = 'sk-z8nVRBLjpVl7wLOvRK4pdeEj0uP9koXcDlKn0ofe8WEhYSnM';
-    document.querySelector('#modelInput').value = 'gpt-4o-mini';
+    document.querySelector('#modelInput').value = 'zai-org/GLM-4.6';
 
     // 隐藏测试结果
     const testResultArea = document.querySelector('#testResultArea');

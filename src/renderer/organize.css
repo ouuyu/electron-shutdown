@@ -294,90 +294,375 @@ body {
     color: var(--info);
 }
 
+/* ==================== 关机倒计时显示区域 ==================== */
+.shutdown-countdown-section {
+    display: flex;
+    justify-content: center;
+}
+
+.countdown-card {
+    width: min(680px, 100%);
+    background: linear-gradient(135deg, 
+        rgba(239, 68, 68, 0.08) 0%, 
+        rgba(249, 115, 22, 0.06) 100%);
+    border-radius: 24px;
+    border: 2px solid rgba(239, 68, 68, 0.2);
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.12), 
+                0 4px 16px rgba(239, 68, 68, 0.08);
+    overflow: hidden;
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 12px 40px rgba(239, 68, 68, 0.12), 
+                    0 4px 16px rgba(239, 68, 68, 0.08);
+    }
+    50% {
+        box-shadow: 0 16px 48px rgba(239, 68, 68, 0.18), 
+                    0 6px 20px rgba(239, 68, 68, 0.12);
+    }
+}
+
+.countdown-card-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.95) 0%, 
+        rgba(254, 252, 252, 0.9) 100%);
+}
+
+.countdown-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, 
+        rgba(239, 68, 68, 0.15) 0%, 
+        rgba(249, 115, 22, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+    flex-shrink: 0;
+    animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.08) rotate(-3deg);
+    }
+}
+
+.countdown-icon-wrapper svg {
+    width: 28px;
+    height: 28px;
+}
+
+.countdown-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.countdown-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-strong);
+    letter-spacing: 0.02em;
+}
+
+.countdown-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    font-weight: 500;
+}
+
+.countdown-display {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, 
+        rgba(239, 68, 68, 0.12) 0%, 
+        rgba(249, 115, 22, 0.08) 100%);
+    border-radius: 16px;
+    border: 2px solid rgba(239, 68, 68, 0.25);
+    box-shadow: inset 0 2px 8px rgba(239, 68, 68, 0.08);
+}
+
+.countdown-number {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -2px;
+    min-width: 65px;
+    text-align: center;
+    animation: countdownPulse 1s ease-in-out infinite;
+}
+
+@keyframes countdownPulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 4px 12px rgba(239, 68, 68, 0.3));
+    }
+}
+
+.countdown-number.urgent {
+    animation: urgentShake 0.5s ease-in-out infinite;
+}
+
+@keyframes urgentShake {
+    0%, 100% {
+        transform: translateX(0) scale(1);
+    }
+    25% {
+        transform: translateX(-2px) scale(1.05);
+    }
+    75% {
+        transform: translateX(2px) scale(1.05);
+    }
+}
+
+.countdown-unit {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ef4444;
+    padding-bottom: 4px;
+}
+
+/* 倒计时已取消状态 */
+.countdown-card.cancelled {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.08) 0%, 
+        rgba(5, 150, 105, 0.06) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+    animation: none;
+}
+
+.countdown-card.cancelled .countdown-icon-wrapper {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.15) 0%, 
+        rgba(5, 150, 105, 0.1) 100%);
+    color: var(--success);
+    animation: none;
+}
+
+.countdown-card.cancelled .countdown-display {
+    background: linear-gradient(135deg, 
+        rgba(16, 185, 129, 0.12) 0%, 
+        rgba(5, 150, 105, 0.08) 100%);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.countdown-card.cancelled .countdown-number {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: none;
+}
+
+.countdown-card.cancelled .countdown-unit {
+    color: var(--success);
+}
+
+/* ==================== 滑动取消区域 ==================== */
 .slide-to-cancel {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
 .slide-shell {
-    width: min(640px, 100%);
-    background: rgba(255, 255, 255, 0.65);
-    border-radius: 24px;
-    border: 1px solid var(--border-soft);
-    box-shadow: 0 14px 36px rgba(14, 27, 43, 0.05);
-    padding: 20px 24px 24px;
+    width: min(680px, 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(54, 125, 253, 0.15);
+    box-shadow: 0 20px 60px rgba(14, 27, 43, 0.08), 0 8px 24px rgba(54, 125, 253, 0.06);
+    padding: 28px 32px 32px;
     display: flex;
     flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slide-shell:hover {
+    box-shadow: 0 24px 72px rgba(14, 27, 43, 0.12), 0 12px 32px rgba(54, 125, 253, 0.1);
+    transform: translateY(-2px);
+}
+
+/* 滑动头部信息 */
+.slide-header {
+    display: flex;
+    align-items: center;
     gap: 16px;
 }
 
-.slide-label {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text-strong);
-}
-
-.slide-track {
-    position: relative;
-    height: 52px;
-    border-radius: 999px;
-    background: rgba(54, 125, 253, 0.12);
-    overflow: hidden;
-}
-
-.slide-track-background {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, rgba(54, 125, 253, 0.18), rgba(255, 255, 255, 0.4));
-    opacity: 0.6;
-}
-
-.slide-track-progress {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, rgba(54, 125, 253, 0.55), rgba(75, 156, 255, 0.35));
-    width: 0;
-    transition: width 0.2s ease;
-    border-radius: inherit;
-}
-
-.slide-button {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    border: none;
-    display: inline-flex;
+.slide-icon-left {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(54, 125, 253, 0.12) 0%, rgba(75, 156, 255, 0.08) 100%);
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--card-bg);
     color: var(--brand-primary);
-    box-shadow: 0 6px 16px rgba(19, 62, 135, 0.18);
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
 }
 
-.slide-button:active {
-    transform: scale(0.96);
-    box-shadow: 0 3px 10px rgba(19, 62, 135, 0.18);
+.slide-icon-left svg {
+    width: 24px;
+    height: 24px;
 }
 
-.slide-icon {
-    width: 18px;
-    height: 18px;
-    display: inline-flex;
+.slide-text-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.slide-icon svg {
-    width: 100%;
-    height: 100%;
+.slide-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-strong);
+    letter-spacing: 0.02em;
 }
 
 .slide-hint {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-soft);
+    font-weight: 500;
+}
+
+/* 滑动轨道 */
+.slide-track {
+    position: relative;
+    height: 64px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, 
+        rgba(16, 185, 129, 0.08) 0%, 
+        rgba(54, 125, 253, 0.05) 50%,
+        rgba(54, 125, 253, 0.12) 100%);
+    overflow: hidden;
+    border: 2px solid rgba(54, 125, 253, 0.15);
+    box-shadow: inset 0 2px 8px rgba(54, 125, 253, 0.08);
+}
+
+.slide-track-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(90deg, 
+        rgba(16, 185, 129, 0.35) 0%, 
+        rgba(16, 185, 129, 0.2) 100%);
+    border-radius: inherit;
+    transition: width 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 滑动说明文字 */
+.slide-instructions {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--brand-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    pointer-events: none;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.slide-track.dragging .slide-instructions {
+    opacity: 0.3;
+}
+
+.arrow-icon {
+    width: 20px;
+    height: 20px;
+    animation: slideHintPulse 2s ease-in-out infinite;
+}
+
+@keyframes slideHintPulse {
+    0%, 100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-6px);
+        opacity: 0.6;
+    }
+}
+
+/* 滑动按钮 */
+.slide-button {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 4px 16px rgba(54, 125, 253, 0.2), 
+                0 8px 32px rgba(14, 27, 43, 0.12);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+    touch-action: none;
+    z-index: 10;
+}
+
+.slide-button:hover {
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 6px 20px rgba(54, 125, 253, 0.3), 
+                0 12px 40px rgba(14, 27, 43, 0.15);
+}
+
+.slide-button:active {
+    cursor: grabbing;
+}
+
+.slide-button-inner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.slide-button-inner svg {
+    width: 22px;
+    height: 22px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .exit-hint {
@@ -386,58 +671,92 @@ body {
     color: var(--text-soft);
 }
 
-.hold-prompt {
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(10, 26, 52, 0.35);
+/* ==================== 拖拽状态动画 ==================== */
+.slide-track.dragging {
+    border-color: var(--brand-primary);
+    box-shadow: inset 0 2px 12px rgba(54, 125, 253, 0.15),
+                0 0 0 3px rgba(54, 125, 253, 0.1);
 }
 
-.hold-prompt-content {
-    width: min(320px, 80%);
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 28px;
-    box-shadow: 0 20px 45px rgba(8, 31, 66, 0.22);
-    border: 1px solid var(--border-soft);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
+.slide-track.dragging .slide-button {
+    cursor: grabbing;
+    transform: translateY(-50%) scale(1.15);
+    box-shadow: 0 8px 24px rgba(54, 125, 253, 0.35), 
+                0 16px 48px rgba(14, 27, 43, 0.2);
 }
 
-.hold-prompt-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text-strong);
+.slide-track.dragging .slide-button-inner {
+    animation: rotatePulse 0.8s ease-in-out infinite;
 }
 
-.hold-prompt-subtitle {
-    font-size: 0.9rem;
-    color: var(--text-soft);
+@keyframes rotatePulse {
+    0%, 100% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(-5deg) scale(1.05);
+    }
 }
 
-.hold-prompt-timer {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--brand-primary);
+/* 达到阈值状态 */
+.slide-shell.threshold-reached {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 24px 72px rgba(16, 185, 129, 0.12), 
+                0 12px 32px rgba(16, 185, 129, 0.1),
+                0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-.hold-prompt-progress {
-    height: 8px;
-    border-radius: 999px;
-    background: rgba(54, 125, 253, 0.12);
-    overflow: hidden;
-    margin-top: 4px;
+.slide-shell.threshold-reached .slide-label {
+    color: var(--success);
 }
 
-.hold-prompt-progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(120deg, var(--brand-primary), var(--brand-secondary));
-    transition: width 0.1s ease;
+.slide-shell.threshold-reached .slide-icon-left {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.12) 100%);
+    color: var(--success);
+}
+
+.slide-shell.threshold-reached .slide-track {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: linear-gradient(90deg, 
+        rgba(16, 185, 129, 0.15) 0%, 
+        rgba(16, 185, 129, 0.08) 100%);
+}
+
+.slide-shell.threshold-reached .slide-button-inner {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    animation: successPulse 0.6s ease-in-out infinite;
+}
+
+@keyframes successPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3),
+                    0 0 16px rgba(16, 185, 129, 0.5);
+    }
+}
+
+/* 取消成功状态 */
+.slide-shell.cancel-success {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
+    border-color: var(--success);
+    animation: successBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes successBounce {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @media (max-width: 640px) {
@@ -471,5 +790,60 @@ body {
 
     .completion-area {
         padding: 18px;
+    }
+    
+    /* 倒计时卡片响应式 */
+    .countdown-card-header {
+        padding: 20px 24px;
+        gap: 16px;
+    }
+    
+    .countdown-icon-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .countdown-icon-wrapper svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .countdown-title {
+        font-size: 1rem;
+    }
+    
+    .countdown-subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .countdown-number {
+        font-size: 2.5rem;
+        min-width: 55px;
+    }
+    
+    .countdown-unit {
+        font-size: 1rem;
+    }
+    
+    .slide-header {
+        gap: 12px;
+    }
+    
+    .slide-icon-left {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .slide-icon-left svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .slide-label {
+        font-size: 1rem;
+    }
+    
+    .slide-hint {
+        font-size: 0.8rem;
     }
 }

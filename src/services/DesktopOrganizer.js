@@ -82,6 +82,13 @@ class DesktopOrganizer {
 
             // 逐个处理文件
             for (let i = 0; i < files.length; i++) {
+                // 检查是否需要停止
+                if (this.shouldStop) {
+                    this.log('Organization stopped by user', 'WARNING');
+                    this.updateProgress(0, '已取消整理');
+                    return;
+                }
+
                 const file = files[i];
                 this.processedFiles = i;
 

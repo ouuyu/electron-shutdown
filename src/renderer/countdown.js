@@ -86,23 +86,40 @@ class ParticleSystem {
     }
 }
 
-// ==================== 鼠标晃动检测器 ====================
+// ==================== 鼠标晃动/拖拽检测器 ====================
 class MouseShakeDetector {
     constructor(onShakeComplete) {
         this.onShakeComplete = onShakeComplete;
-    this.positions = [];
-    this.maxPositions = 12;
-    this.shakeThreshold = 1100;
-    this.shakeProgress = 0;
-    this.requiredShake = 100;
-    this.isShaking = false;
-    this.decayRate = 1.6;
+        this.positions = [];
+        this.maxPositions = 10;
+        this.shakeThreshold = 500; // 降低阈值，更容易触发
+        this.shakeProgress = 0;
+        this.requiredShake = 100;
+        this.isShaking = false;
+        this.decayRate = 1.2;
+        
+        // 拖拽相关
+        this.isDragging = false;
+        this.dragStartX = 0;
+        this.dragStartY = 0;
+        this.dragThreshold = 150; // 拖拽距离阈值
         
         this.init();
     }
     
     init() {
+        // 鼠标移动事件
         document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        
+        // 鼠标拖拽事件
+        document.addEventListener('mousedown', (e) => this.onDragStart(e));
+        document.addEventListener('mousemove', (e) => this.onDragMove(e));
+        document.addEventListener('mouseup', (e) => this.onDragEnd(e));
+        
+        // 触摸事件支持
+        document.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        document.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: false });
+        document.addEventListener('touchend', (e) => this.onTouchEnd(e), { passive: false });
         
         // 进度衰减
         setInterval(() => {
@@ -111,10 +128,90 @@ class MouseShakeDetector {
                 this.updateProgress();
             }
             this.isShaking = false;
-        }, 120);
+        }, 100);
     }
     
+    // 鼠标拖拽开始
+    onDragStart(e) {
+        this.isDragging = true;
+        this.dragStartX = e.clientX;
+        this.dragStartY = e.clientY;
+        document.body.classList.add('dragging');
+    }
+    
+    // 鼠标拖拽移动
+    onDragMove(e) {
+        if (!this.isDragging) return;
+        
+        const deltaX = Math.abs(e.clientX - this.dragStartX);
+        const deltaY = Math.abs(e.clientY - this.dragStartY);
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // 更新进度条
+        const progress = Math.min(100, (distance / this.dragThreshold) * 100);
+        this.shakeProgress = progress;
+        this.updateProgress();
+        
+        // 如果拖拽距离足够，触发取消
+        if (distance >= this.dragThreshold) {
+            this.onShakeComplete();
+            this.isDragging = false;
+            document.body.classList.remove('dragging');
+        }
+    }
+    
+    // 鼠标拖拽结束
+    onDragEnd(e) {
+        this.isDragging = false;
+        document.body.classList.remove('dragging');
+    }
+    
+    // 触摸开始
+    onTouchStart(e) {
+        if (e.touches.length > 0) {
+            const touch = e.touches[0];
+            this.isDragging = true;
+            this.dragStartX = touch.clientX;
+            this.dragStartY = touch.clientY;
+            document.body.classList.add('dragging');
+        }
+    }
+    
+    // 触摸移动
+    onTouchMove(e) {
+        if (!this.isDragging || e.touches.length === 0) return;
+        
+        e.preventDefault(); // 防止页面滚动
+        
+        const touch = e.touches[0];
+        const deltaX = Math.abs(touch.clientX - this.dragStartX);
+        const deltaY = Math.abs(touch.clientY - this.dragStartY);
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // 更新进度条
+        const progress = Math.min(100, (distance / this.dragThreshold) * 100);
+        this.shakeProgress = progress;
+        this.updateProgress();
+        
+        // 如果拖拽距离足够，触发取消
+        if (distance >= this.dragThreshold) {
+            this.onShakeComplete();
+            this.isDragging = false;
+            document.body.classList.remove('dragging');
+        }
+    }
+    
+    // 触摸结束
+    onTouchEnd(e) {
+        this.isDragging = false;
+        document.body.classList.remove('dragging');
+    }
+    
+    // 鼠标移动检测（原有的晃动检测）
     onMouseMove(e) {
+        // 如果正在拖拽，不进行晃动检测
+        if (this.isDragging) return;
+        
         this.positions.push({ x: e.clientX, y: e.clientY, time: Date.now() });
         
         if (this.positions.length > this.maxPositions) {
@@ -126,7 +223,7 @@ class MouseShakeDetector {
             
             if (shake > this.shakeThreshold) {
                 this.isShaking = true;
-                this.shakeProgress = Math.min(this.requiredShake, this.shakeProgress + 7);
+                this.shakeProgress = Math.min(this.requiredShake, this.shakeProgress + 10);
                 this.updateProgress();
                 
                 if (this.shakeProgress >= this.requiredShake) {
@@ -153,7 +250,7 @@ class MouseShakeDetector {
     updateProgress() {
         const progressBar = document.getElementById('shakeProgress');
         if (progressBar) {
-            progressBar.style.width = `${(this.shakeProgress / this.requiredShake) * 100}%`;
+            progressBar.style.width = `${this.shakeProgress}%`;
         }
     }
 }

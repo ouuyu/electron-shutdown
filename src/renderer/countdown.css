@@ -448,6 +448,32 @@ body {
     color: var(--text-gray);
 }
 
+/* ==================== 拖拽状态 ==================== */
+body.dragging {
+    cursor: grabbing !important;
+    user-select: none;
+}
+
+body.dragging * {
+    cursor: grabbing !important;
+}
+
+body.dragging .circle-container {
+    transform: scale(0.98);
+    transition: transform 0.15s ease-out;
+}
+
+body.dragging .cancel-hint {
+    background: rgba(76, 110, 245, 0.15);
+    border-color: var(--primary-color);
+    transform: translateX(-50%) scale(1.05);
+    transition: all 0.15s ease-out;
+}
+
+body.dragging .hint-text {
+    color: var(--primary-color);
+}
+
 /* ==================== 响应式 ==================== */
 @media (max-width: 768px) {
     .main-container {

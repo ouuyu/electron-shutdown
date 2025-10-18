@@ -228,8 +228,8 @@ const createOrganizeWindow = () => {
     countdownWindow.setAlwaysOnTop(true, 'screen-saver');
     countdownWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
-    // 创建仅整理的HTML页面
-    countdownWindow.loadFile('src/renderer/organize-only.html');
+    // 使用统一的整理页面（无关机功能）
+    countdownWindow.loadFile('src/renderer/organize.html');
 
     // 页面加载完成后开始整理桌面
     countdownWindow.webContents.once('did-finish-load', () => {
@@ -307,7 +307,8 @@ ipcMain.on('execute-shutdown', () => {
 // 关闭倒计时窗口
 ipcMain.on('close-countdown-window', () => {
     if (countdownWindow) {
-        countdownWindow.close();
+        countdownWindow.destroy();
+        countdownWindow = null;
     }
 });
 
